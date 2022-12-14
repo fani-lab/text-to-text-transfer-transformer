@@ -20,10 +20,16 @@ import seqio
 DEFAULT_SPM_PATH = "gs://t5-data/vocabs/cc_all.32000/sentencepiece.model"  # GCS
 DEFAULT_EXTRA_IDS = 100
 
+@gin.configurable
+def get_default_spm_path(path=None):
+    global DEFAULT_SPM_PATH
+    return path if path else DEFAULT_SPM_PATH
 
+#t5.data.tasks module calls this function way before gin params init for creating the tasks/mixtures.
+#So, the runner will raise exception if a specific task is requested.
+#it's now ignored by --module_import="numpy" or any common module (default is t5.data.mixtures) and MIXTURE_NAME='' (empty) in --gin_param
 def get_default_vocabulary():
-  return seqio.SentencePieceVocabulary(DEFAULT_SPM_PATH, DEFAULT_EXTRA_IDS)
-
+    return seqio.SentencePieceVocabulary(get_default_spm_path(), DEFAULT_EXTRA_IDS)
 
 # ========================= Mixing Rate Functions ==============================
 
