@@ -20,6 +20,11 @@ import seqio
 DEFAULT_SPM_PATH = "gs://t5-data/vocabs/cc_all.32000/sentencepiece.model"  # GCS
 DEFAULT_EXTRA_IDS = 100
 
+#--gin_param="SentencePieceVocabulary.sentencepiece_model_file = './output/t5/vocabs/cc_all.32000/sentencepiece.model'"  ^
+#--gin_param="tsv_dataset_fn.vocabulary = @SentencePieceVocabulary()" ^ ==> Does not work since seqio does not import gin and this functiontion does not have gin.configurable decorator
+#--gin_param="run.vocabulary = @SentencePieceVocabulary()" ==> even if works, at t5.models.mesh_transformer_main.py#181, it is explicitly bind to a function. So, useless gin_param
+# Either hard code vocab path or below solution
+
 @gin.configurable
 def get_default_spm_path(path=None):
     global DEFAULT_SPM_PATH
